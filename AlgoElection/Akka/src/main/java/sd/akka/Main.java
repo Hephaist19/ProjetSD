@@ -1,28 +1,38 @@
 package sd.akka;
 
-import java.time.Duration;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
-
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
-import akka.pattern.Patterns;
-import akka.routing.RoundRobinPool;
 
-import sd.akka.actor.ChaineActeur;
+import sd.akka.actor.AlgoElection;
+import sd.akka.actor.MessageElection;
 
 public class Main {
 
-        public static void main(String[] args) {
+    public static void main(String[] args) {
 
-        ActorSystem actorSystem = ActorSystem.create();
+        // créer le système d'acteur
+        ActorSystem actorSystem = ActorSystem.create("AlgorithmeElectionChangRoberts");
 
-        ActorRef chaineActorRef = actorSystem.actorOf(ChaineActeur.props(2));
+        // créer le premier acteur
+        ActorRef premierProcess = actorSystem.actorOf(AlgoElection.props(1, 5), "processus1");
 
-        chaineActorRef.tell(new ChaineActeur.CreateActor(), ActorRef.noSender());
+        // créer les autres acteurs
+        for (int i = 2; i <= 5; i++) {
+            actorSystem.actorOf(AlgoElection.props(i, 5), "processus" + i);
+        }
+
+        // envoie un message d'élection au premier processus (id = 1), lance l'election
+        premierProcess.tell(new MessageElection(1), ActorRef.noSender());
+
+        // Ajout d'un délai pour permettre aux acteurs de traiter les messages
+        try {
+            Thread.sleep(5000); // 5 secondes
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         // Arrêt du système d'acteurs
         actorSystem.terminate();
     }
-    
+
 }

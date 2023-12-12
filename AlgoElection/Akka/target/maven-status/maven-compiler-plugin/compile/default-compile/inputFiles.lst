@@ -1,8 +1,4 @@
-/home7/jl336673/Documents/M1s1/SD/Distributed-Systems-Master-master/Akka/src/main/java/sd/akka/actor/PingPongActor.java
-/home7/jl336673/Documents/M1s1/SD/Distributed-Systems-Master-master/Akka/src/main/java/sd/akka/actor/JourNuitActor.java
-/home7/jl336673/Documents/M1s1/SD/Distributed-Systems-Master-master/Akka/src/main/java/sd/akka/Ex.java
-/home7/jl336673/Documents/M1s1/SD/Distributed-Systems-Master-master/Akka/src/main/java/sd/akka/actor/HelloWorldActor.java
-/home7/jl336673/Documents/M1s1/SD/Distributed-Systems-Master-master/Akka/src/main/java/sd/akka/App.java
-/home7/jl336673/Documents/M1s1/SD/Distributed-Systems-Master-master/Akka/src/main/java/sd/akka/actor/ArbitreActor.java
-/home7/jl336673/Documents/M1s1/SD/Distributed-Systems-Master-master/Akka/src/main/java/sd/akka/actor/NombrePremierActor.java
-/home7/jl336673/Documents/M1s1/SD/Distributed-Systems-Master-master/Akka/src/main/java/sd/akka/actor/ChaineActeur.java
+c:\Users\julie\Documents\.M1\SD\ProjetSD\AlgoElection\Akka\src\main\java\sd\akka\actor\AlgoElection.java
+c:\Users\julie\Documents\.M1\SD\ProjetSD\AlgoElection\Akka\src\main\java\sd\akka\actor\MessageElection.java
+c:\Users\julie\Documents\.M1\SD\ProjetSD\AlgoElection\Akka\src\main\java\sd\akka\Main.java
+c:\Users\julie\Documents\.M1\SD\ProjetSD\AlgoElection\Akka\src\main\java\sd\akka\actor\FinProcessus.java
