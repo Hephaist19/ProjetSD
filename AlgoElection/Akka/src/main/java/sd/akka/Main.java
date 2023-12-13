@@ -1,5 +1,7 @@
 package sd.akka;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 
@@ -15,29 +17,37 @@ public class Main {
 
         int numProcess = 5;
 
-        //création d'un tableau de numActeur qui formera l'anneau
+        // création d'un tableau de numActeur qui formera l'anneau
         ActorRef[] process = new ActorRef[numProcess];
 
         // créer les autres acteurs
-        for (int i = 0; i <= numProcess ; i++) {
-            int indexProchainProcess = (i+1) % numProcess;
-            process[i] = actorSystem.actorOf(AlgoElection.props(i + 1, process[indexProchainProcess]), "processus" + (i+1));
-        
-            //envoie message initial
-            System.out.println("Id du process " + i + " : " + getIdFromPath(process[i].path().toString()););
-        
-        }  
+        for (int i = 0; i < numProcess; i++) {
+            // int indexProchainProcess = (i+1) % numProcess;
+            process[i] = actorSystem.actorOf(AlgoElection.props(i + 1), "processus" + (i + 1));
+        }
 
         process[0].tell("Je suis le process 1", ActorRef.noSender());
 
-        int idProcess0 = getIdFromPath(process[0].path().toString());
+        // Choix aléatoire du process qui commence
+        int indicePremierProcess = ThreadLocalRandom.current().nextInt(numProcess);
 
-        // Le premier process envoi un message d'élection au deuxieme processus, lance l'election
-        process[0].tell(new MessageElection(process[0].getIdProcess()), ActorRef.noSender());
+        // définir les voisins de l'anneau
+        for (int i = 0; i < numProcess; i++) {
+            ActorRef processCourant = process[i];
+            int idVoisin = (i + 1) % numProcess;
+            ActorRef voisin = process[idVoisin];
+
+            processCourant.tell(new AlgoElection.CreationAnneau(voisin), ActorRef.noSender());
+
+        }
+
+        // Le premier process envoi un message d'élection au deuxieme processus, lance
+        // l'election
+        process[indicePremierProcess].tell(new AlgoElection.DemarrerElection(), ActorRef.noSender());
 
         // Ajout d'un délai pour permettre aux acteurs de traiter les messages
         try {
-            Thread.sleep(1000); // 1 secondes
+            Thread.sleep(5000); // 5 secondes
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

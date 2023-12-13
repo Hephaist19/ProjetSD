@@ -2,67 +2,80 @@ package sd.akka.actor;
 
 import akka.actor.AbstractActor;
 import akka.actor.Props;
+import akka.japi.pf.ReceiveBuilder;
 import akka.actor.ActorRef;
 
 //Algorithme d'élection de Chang et Roberts
 public class AlgoElection extends AbstractActor {
     private final int idProcess;
-    private final int totalProcess;
+    private ActorRef prochainProcess;
 
-    private final ActorRef prochainProcess;
+    private boolean aVoisin = false;
+    private boolean electionDemarree = false;
 
-    private AlgoElection(int idProcess, ActorRef prochainProcess) {
+    private AlgoElection(int idProcess) {
         this.idProcess = idProcess;
-        this.prochainProcess = prochainProcess;
-
-        System.out.println("Création du processus " + idProcess);
     }
 
     // Méthode servant à la création d'un acteur
-    static public Props props(int idProcess, ActorRef prochainProcess) {
-        return Props.create(AlgoElection.class, () -> new AlgoElection(idProcess, prochainProcess));
+    static public Props props(int idProcess) {
+        return Props.create(AlgoElection.class, () -> new AlgoElection(idProcess));
+    }
+
+    // Messages pris en charge par l'acteur
+    public static class CreationAnneau {
+        final ActorRef voisin;
+
+        public CreationAnneau(ActorRef voisin) {
+            this.voisin = voisin;
+        }
+    }
+
+    public static class DemarrerElection {
     }
 
     @Override
     public Receive createReceive() {
-        return receiveBuilder()
-                .match(MessageElection.class, this::election)
-                .match(FinProcessus.class, this::finProcess)
-                .matchAny(message -> {
-                    System.out.println("Processus " + idProcess + " a reçu un message non traité : " + message);
-                })
+        return ReceiveBuilder.create()
+                .match(CreationAnneau.class, this::creationAnneau)
+                .match(DemarrerElection.class, this::demarrerElection)
                 .build();
     }
 
-    private static int getId(String chemin) {
-        // Extraction de l'identifiant à partir du chemin de l'acteur
-        String[] chemin = path.chemin("/");
-        String nomProcess = chemin[chemin.length - 1];
-        return Integer.parseInt(nomProcess.substring(6)); // Supprimer "acteur" du nom
+    // Défini le voisin de l'acteur
+    public void creationAnneau(CreationAnneau message) {
+        if (!aVoisin) {
+            this.prochainProcess = message.voisin;
+            aVoisin = true;
+        }
+
+    }
+
+    // démarre le passage du jeton dans l'anneau, début de l'élection
+    private void demarrerElection(DemarrerElection message) {
+        if (!electionDemarree) {
+            // Envoie l'id du process à la sortie
+            System.out.println("Id du processus " + idProcess + " : " + recupId());
+            afficherInfoAnneau();
+            prochainProcess.tell(message, getSelf());
+            electionDemarree = true;
+        }
+
     }
 
     // Fonction d'élection
     private void election(MessageElection message) {
-        
+
     }
 
-    // Fonction qui va annoncer l'élu
-    private void envoiMessageLeader(int idLeader) {
-
-        // envoi le message d'élection aux autres processus
-        for (int i = 1; i <= totalProcess; i++) {
-            if (i != idLeader) {
-                ActorRef process = getContext().actorOf(AlgoElection.props(i, totalProcess), "Processus : " + i);
-                process.tell(new FinProcessus(), getSelf());
-            }
-        }
+    // affiche les info des processus de l'anneau
+    private void afficherInfoAnneau() {
+        // Affiche l'id du processus et l'id du prochain processus, son voisin
+        System.out.println("Processus " + idProcess + " a pour voisin le processus "
+                + (prochainProcess != null ? prochainProcess.path().name() : "aucun processus"));
     }
 
-    // fonction qui va terminer un processus
-    private void finProcess(FinProcessus message) {
-        // Fini le processus
-        System.out.println("Le processus " + idProcess + " sest termine");
-        getContext().stop(getSelf());
+    private int recupId() {
+        return idProcess;
     }
-
 }
