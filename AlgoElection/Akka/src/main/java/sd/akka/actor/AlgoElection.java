@@ -9,18 +9,18 @@ public class AlgoElection extends AbstractActor {
     private final int idProcess;
     private final int totalProcess;
 
-    private ActorRef prochainProcess;
+    private final ActorRef prochainProcess;
 
-    private AlgoElection(int idProcess, int totalProcess) {
+    private AlgoElection(int idProcess, ActorRef prochainProcess) {
         this.idProcess = idProcess;
-        this.totalProcess = totalProcess;
+        this.prochainProcess = prochainProcess;
 
         System.out.println("Création du processus " + idProcess);
     }
 
     // Méthode servant à la création d'un acteur
-    static public Props props(int idProcess, int totalProcess) {
-        return Props.create(AlgoElection.class, () -> new AlgoElection(idProcess, totalProcess));
+    static public Props props(int idProcess, ActorRef prochainProcess) {
+        return Props.create(AlgoElection.class, () -> new AlgoElection(idProcess, prochainProcess));
     }
 
     @Override
@@ -34,42 +34,16 @@ public class AlgoElection extends AbstractActor {
                 .build();
     }
 
+    private static int getId(String chemin) {
+        // Extraction de l'identifiant à partir du chemin de l'acteur
+        String[] chemin = path.chemin("/");
+        String nomProcess = chemin[chemin.length - 1];
+        return Integer.parseInt(nomProcess.substring(6)); // Supprimer "acteur" du nom
+    }
+
     // Fonction d'élection
     private void election(MessageElection message) {
-        int receivedId = message.envoiID;
-
-        System.out.println("Nouvelle election");
-
-        // Comparaison avec l'ID du processus courant
-        if (receivedId > idProcess) {
-            // Si l'ID reçu est plus grand, transmettre le message à l'acteur suivant dans
-            // l'anneau
-
-            System.out.println(
-                    "Processus " + idProcess + " transmet l'élection à Processus " + prochainProcess.path().name());
-            // Calcule l'identifiant du prochain processus dans l'anneau d'élection
-            int idProchainProcess = (idProcess % totalProcess) + 1;
-            prochainProcess = getContext().actorOf(AlgoElection.props(idProchainProcess, totalProcess),
-                    "processus" + idProchainProcess);
-
-        } else if (receivedId < idProcess) {
-            // Si l'ID reçu est plus petit, devenir le leader temporaire
-            // processus
-            System.out.println("Processus " + idProcess + " devient le leader temporaire avec l'ID " + idProcess);
-
-            // Continuer l'election
-            System.out.println("Continue election");
-            prochainProcess.tell(new MessageElection(idProcess), getSelf());
-
-        } else {
-            // Si les ID sont égaux cela signifi qu'un acteur a reçu son propre ID et qu'il
-            // a donc l'ID le plus grand de la boucle
-            System.out.println("Processus " + idProcess
-                    + " a reçu un message d'élection avec le même ID. Le processus " + idProcess + " est le leader");
-
-            // envoi un message pour arreter tout les processus et finir l'election
-            envoiMessageLeader(idProcess);
-        }
+        
     }
 
     // Fonction qui va annoncer l'élu
