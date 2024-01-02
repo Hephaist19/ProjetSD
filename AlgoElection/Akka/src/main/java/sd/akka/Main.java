@@ -6,7 +6,6 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 
 import sd.akka.actor.AlgoElection;
-import sd.akka.actor.MessageElection;
 
 public class Main {
 

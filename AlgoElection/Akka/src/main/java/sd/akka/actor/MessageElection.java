@@ -2,9 +2,9 @@ package sd.akka.actor;
 
 public class MessageElection {
 
-    public final int envoiID;
+    public final int candidatID;
 
-    public MessageElection(int envoiID) {
-        this.envoiID = envoiID;
+    public MessageElection(int candidatID) {
+        this.candidatID = candidatID;
     }
 }
