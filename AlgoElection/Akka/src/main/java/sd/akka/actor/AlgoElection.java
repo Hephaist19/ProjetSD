@@ -105,6 +105,11 @@ public class AlgoElection extends AbstractActor {
             prochainProcess.tell(new MessageElu(message.gagnantId), getSelf());
             System.out.println("Le processus " + monNumero + " a recu le message que le processus " + message.gagnantId
                     + " est elu et le transmet");
+            // arrete le processus
+            getContext().stop(getSelf());
+        } else {
+            // arrete le processus lorsqu'il est élu
+            getContext().stop(getSelf());
         }
     }
 
