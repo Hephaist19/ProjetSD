@@ -57,7 +57,6 @@ public class AlgoElection extends AbstractActor {
             this.prochainProcess = message.voisin;
             aVoisin = true;
         }
-
     }
 
     // démarre le passage du jeton dans l'anneau, début de l'élection
@@ -70,7 +69,6 @@ public class AlgoElection extends AbstractActor {
             electionDemarree = true;
             peutEnvoyer = true;
         }
-
     }
 
     // Fonction d'élection
@@ -109,6 +107,7 @@ public class AlgoElection extends AbstractActor {
             getContext().stop(getSelf());
         } else {
             // arrete le processus lorsqu'il est élu
+            System.out.println("Le processus " + message.gagnantId + " est elu. L'election est fini.");
             getContext().stop(getSelf());
         }
     }

@@ -37,7 +37,6 @@ public class Main {
             ActorRef voisin = process[idVoisin];
 
             processCourant.tell(new AlgoElection.CreationAnneau(voisin), ActorRef.noSender());
-
         }
 
         // Le premier process envoi un message d'élection au deuxieme processus, lance
