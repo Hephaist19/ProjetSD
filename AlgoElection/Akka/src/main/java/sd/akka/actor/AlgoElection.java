@@ -38,7 +38,30 @@ public class AlgoElection extends AbstractActor {
         }
     }
 
+        public class MessageElection {
+
+        public final int candidatID;
+    
+        public MessageElection(int candidatID) {
+            this.candidatID = candidatID;
+        }
+    }
+
+    public class MessageElu {
+        final int gagnantId;
+    
+        public MessageElu(int gagnantId) {
+            this.gagnantId = gagnantId;
+        }
+    }
+
     public static class DemarrerElection {
+    }
+
+    public class FinProcessus {
+
+        public FinProcessus() {
+        }
     }
 
     @Override
@@ -88,7 +111,7 @@ public class AlgoElection extends AbstractActor {
         } else if (message.candidatID == monNumero) {
             prochainProcess.tell(new MessageElu(monNumero), getSelf());
             System.out.println("Le processus " + monNumero + " a recu : " + message.candidatID
-                    + ". Qui est son propre Id. Le processus " + monNumero + " est donc elu.");
+                    + ". Qui est son propre Id. Le processus " + getSelf().path().name() + " est donc elu.");
 
             peutEnvoyer = false;
         }
