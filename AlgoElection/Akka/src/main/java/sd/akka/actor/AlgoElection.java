@@ -7,7 +7,6 @@ import akka.actor.ActorRef;
 
 //Algorithme d'élection de Chang et Roberts
 public class AlgoElection extends AbstractActor {
-    private final int idProcess;
     private ActorRef prochainProcess;
 
     private final int monNumero;
@@ -20,7 +19,6 @@ public class AlgoElection extends AbstractActor {
     private boolean peutEnvoyer = false; // permetd'avoir un affichae plus cohérent malgré le système asynchrone
 
     private AlgoElection(int idProcess) {
-        this.idProcess = idProcess;
         this.monNumero = idProcess;
     }
 
@@ -38,10 +36,10 @@ public class AlgoElection extends AbstractActor {
         }
     }
 
-        public class MessageElection {
+    public class MessageElection {
 
         public final int candidatID;
-    
+
         public MessageElection(int candidatID) {
             this.candidatID = candidatID;
         }
@@ -49,7 +47,7 @@ public class AlgoElection extends AbstractActor {
 
     public class MessageElu {
         final int gagnantId;
-    
+
         public MessageElu(int gagnantId) {
             this.gagnantId = gagnantId;
         }
@@ -86,7 +84,7 @@ public class AlgoElection extends AbstractActor {
     private void demarrerElection(DemarrerElection message) {
         if (!electionDemarree && !peutEnvoyer) {
             // Envoie l'id du process à la sortie
-            System.out.println("Id du processus " + idProcess + " : " + recupId());
+            System.out.println("Id du processus " + monNumero + " : " + recupId());
             afficherInfoAnneau();
             prochainProcess.tell(new MessageElection(monNumero), getSelf());
             electionDemarree = true;
@@ -99,19 +97,22 @@ public class AlgoElection extends AbstractActor {
         if (message.candidatID > monNumero) {
             prochainProcess.tell(new MessageElection(message.candidatID), getSelf());
             participant = true;
-            System.out.println("Le processus " + monNumero + " recoit " + message.candidatID
-                    + ". Son Id est inferieur a celui recu. Il transmet alors lId: "
-                    + message.candidatID);
+            System.out.println(
+                    getSelf().path().name() + " : " + monNumero + ". Recoit " + message.candidatID
+                            + ". Son Id est inferieur a celui recu. Il transmet alors lId: "
+                            + message.candidatID);
         } else if (message.candidatID < monNumero && !participant) {
             prochainProcess.tell(new MessageElection(monNumero), getSelf());
             participant = true;
-            System.out.println("Le processus " + monNumero + " recoit " + message.candidatID
-                    + ". Son Id est superieur a celui recu. Il transmet alors son Id: "
-                    + monNumero);
+            System.out.println(
+                    getSelf().path().name() + " : " + monNumero + ". Recoit " + message.candidatID
+                            + ". Son Id est superieur a celui recu. Il transmet alors son Id: "
+                            + monNumero);
         } else if (message.candidatID == monNumero) {
             prochainProcess.tell(new MessageElu(monNumero), getSelf());
-            System.out.println("Le processus " + monNumero + " a recu : " + message.candidatID
-                    + ". Qui est son propre Id. Le processus " + getSelf().path().name() + " est donc elu.");
+            System.out.println(
+                    getSelf().path().name() + " : " + monNumero + ". A recu : " + message.candidatID
+                            + ". Qui est son propre Id." + getSelf().path().name() + " est donc elu.");
 
             peutEnvoyer = false;
         }
@@ -124,13 +125,16 @@ public class AlgoElection extends AbstractActor {
         // fait passer le message d'élection si l'Id reçu est différent de celui courant
         if (message.gagnantId != monNumero) {
             prochainProcess.tell(new MessageElu(message.gagnantId), getSelf());
-            System.out.println("Le processus " + monNumero + " a recu le message que le processus " + message.gagnantId
-                    + " est elu et le transmet");
+            System.out.println(getSelf().path().name() + " : " + monNumero
+                    + ". A recu le message que l'acteur' "
+                    + message.gagnantId
+                    + ", est elu et le transmet");
             // arrete le processus
             getContext().stop(getSelf());
         } else {
             // arrete le processus lorsqu'il est élu
-            System.out.println("Le processus " + message.gagnantId + " est elu. L'election est fini.");
+            System.out.println(getSelf().path().name() + " : " + message.gagnantId
+                    + ", est elu. L'election est fini.");
             getContext().stop(getSelf());
         }
     }
@@ -138,11 +142,11 @@ public class AlgoElection extends AbstractActor {
     // affiche les info des processus de l'anneau
     private void afficherInfoAnneau() {
         // Affiche l'id du processus et l'id du prochain processus, son voisin
-        System.out.println("Processus " + idProcess + " a pour voisin le processus "
+        System.out.println(getSelf().path().name() + " : " + monNumero + ", a pour voisin "
                 + (prochainProcess != null ? prochainProcess.path().name() : " aucun processus"));
     }
 
     private int recupId() {
-        return idProcess;
+        return monNumero;
     }
 }

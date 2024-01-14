@@ -59,6 +59,10 @@ public class Main {
             process[i] = actorSystem.actorOf(AlgoElection.props(i + 1), noms[alea]);
         }
 
+        for (int i = 0; i < numProcess; i++) {
+            System.out.println("Acteur " + (i + 1) + " : " + process[i].path().name());
+        }
+
         process[0].tell("Je suis le process 1", ActorRef.noSender());
 
         // Choix aléatoire du process qui commence
