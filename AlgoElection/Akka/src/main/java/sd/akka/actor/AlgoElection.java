@@ -56,12 +56,6 @@ public class AlgoElection extends AbstractActor {
     public static class DemarrerElection {
     }
 
-    public class FinProcessus {
-
-        public FinProcessus() {
-        }
-    }
-
     @Override
     public Receive createReceive() {
         return ReceiveBuilder.create()
