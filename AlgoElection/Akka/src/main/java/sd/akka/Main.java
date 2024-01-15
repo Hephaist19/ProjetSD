@@ -57,6 +57,8 @@ public class Main {
             // process[i] = actorSystem.actorOf(AlgoElection.props(i + 1), "processus" + (i
             // + 1));
             process[i] = actorSystem.actorOf(AlgoElection.props(i + 1), noms[alea]);
+
+            // process[i] = actorSystem.actorOf(AlgoElection.props(i + 1), "process" + i);
         }
 
         for (int i = 0; i < numProcess; i++) {
